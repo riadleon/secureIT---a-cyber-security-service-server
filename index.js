@@ -87,12 +87,12 @@ async function run() {
             res.send(reviews);
         });
 
-        app.get('/reviews/:id', async (req, res) => {
+        app.get('/reviews/services/:id', async (req, res) => {
             const id = req.params.id;
             console.log(id);
-            const query = { _id: ObjectId(id) };
-            const review = await reviewCollection.findOne(query);
-            res.send(review);
+            const query = { review: id };
+            const result = await reviewCollection.find(query).toArray();
+            res.send(result);
         });
 
         app.delete("/reviews/:id", async (req, res) => {
@@ -126,30 +126,30 @@ async function run() {
             }
         });
 
-        app.patch("/reviews/:id", async (req, res) => {
+        app.patch("/reviews/edit/:id", async (req, res) => {
             const { id } = req.params;
-          
+
             try {
-              const result = await reviewCollection.updateOne({ _id: ObjectId(id) }, { $set: req.body });
-          
-              if (result.matchedCount) {
-                res.send({
-                  success: true,
-                  message: `successfully updated ${req.body.userName}'s comment`,
-                });
-              } else {
-                res.send({
-                  success: false,
-                  error: "Couldn't update  the product",
-                });
-              }
+                const result = await reviewCollection.updateOne({ _id: ObjectId(id) }, { $set: req.body.status });
+
+                if (result.matchedCount) {
+                    res.send({
+                        success: true,
+                        message: `successfully updated ${req.body.userName} comment`,
+                    });
+                } else {
+                    res.send({
+                        success: false,
+                        error: "Couldn't update  the product",
+                    });
+                }
             } catch (error) {
-              res.send({
-                success: false,
-                error: error.message,
-              });
+                res.send({
+                    success: false,
+                    error: error.message,
+                });
             }
-          });
+        });
 
     }
     finally {
