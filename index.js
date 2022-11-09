@@ -16,6 +16,31 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         const serviceCollection = client.db('secureIT').collection('services');
+        const reviewCollection = client.db('secureIT').collection('reviews');
+
+        app.post("/services", async (req, res) => {
+            try {
+                const result = await serviceCollection.insertOne(req.body);
+
+                if (result.insertedId) {
+                    res.send({
+                        success: true,
+                        message: `Successfully created the ${req.body.name} `,
+                    });
+                } else {
+                    res.send({
+                        success: false,
+                        error: "Couldn't create the Service",
+                    });
+                }
+            } catch (error) {
+                console.log(error.name, error.message);
+                res.send({
+                    success: false,
+                    error: error.message,
+                });
+            }
+        });
 
         app.get('/services', async (req, res) => {
             const query = {}
@@ -30,6 +55,38 @@ async function run() {
             const service = await serviceCollection.findOne(query);
             res.send(service);
         });
+        //reviews
+        app.post("/reviews", async (req, res) => {
+            try {
+                const result = await reviewCollection.insertOne(req.body);
+
+                if (result.insertedId) {
+                    res.send({
+                        success: true,
+                        message: `Successfully created the ${req.body.name} `,
+                    });
+                } else {
+                    res.send({
+                        success: false,
+                        error: "Couldn't create review",
+                    });
+                }
+            } catch (error) {
+                console.log(error.name, error.message);
+                res.send({
+                    success: false,
+                    error: error.message,
+                });
+            }
+        });
+
+        app.get('/reviews', async (req, res) => {
+            const query = {}
+            const cursor = reviewCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+        });
+
     }
     finally {
 
