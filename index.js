@@ -86,6 +86,13 @@ async function run() {
             const reviews = await cursor.toArray();
             res.send(reviews);
         });
+        app.get('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: ObjectId(id) };
+            const review = await reviewCollection.findOne(query);
+            res.send(review);
+        });
 
         app.get('/reviews/services/:id', async (req, res) => {
             const id = req.params.id;
